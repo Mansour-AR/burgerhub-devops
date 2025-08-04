@@ -30,18 +30,22 @@ jobs:
           cache: "npm"
           cache-dependency-path: "frontend/package-lock.json"
 
-    - name: Install dependencies
-      run: |
-        cd frontend
-        npm install --legacy-peer-deps      - name: Run linting
+      - name: Install dependencies
         run: |
           cd frontend
-          npm run lint || true  # Continue even if linting fails initially
+          npm install --legacy-peer-deps
 
-    - name: Run tests
-      run: |
-        cd frontend
-        npm test -- --coverage --watchAll=false --passWithNoTests      - name: Build application
+      - name: Run linting
+        run: |
+          cd frontend
+          npm run lint || true
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npm test -- --coverage --watchAll=false --passWithNoTests
+
+      - name: Build application
         run: |
           cd frontend
           npm run build
@@ -159,6 +163,10 @@ jobs:
     defaults:
       run:
         working-directory: terraform
+
+    outputs:
+      alb_dns_name: ${{ steps.terraform-outputs.outputs.alb_dns_name }}
+      ecs_cluster_name: ${{ steps.terraform-outputs.outputs.ecs_cluster_name }}
 
     steps:
       - name: Checkout code
