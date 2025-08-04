@@ -122,7 +122,7 @@ jobs:
       id-token: write
 
     outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
+      image-uri: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
       image-digest: ${{ steps.build.outputs.digest }}
 
     steps:
@@ -267,13 +267,22 @@ jobs:
             --task-definition ${{ env.ECS_TASK_DEFINITION }} \
             --query taskDefinition > task-definition.json
 
+          # Remove fields that cause issues during re-registration
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy)' task-definition.json > temp.json && mv temp.json task-definition.json
+
       - name: Update ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
           container-name: burgerhub-container
-          image: ${{ needs.docker-build-push.outputs.image-tag }}
+          image: ${{ needs.docker-build-push.outputs.image-uri }}
+
+      - name: Validate task definition
+        run: |
+          echo "Validating task definition..."
+          echo "Image URI: ${{ needs.docker-build-push.outputs.image-uri }}"
+          cat ${{ steps.task-def.outputs.task-definition }} | jq '.containerDefinitions[0].image'
 
       - name: Deploy to ECS service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
