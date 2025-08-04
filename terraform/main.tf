@@ -267,27 +267,14 @@ resource "aws_lb_listener" "app" {
   }
 }
 
-# ECR Repository
-resource "aws_ecr_repository" "app" {
-  name                 = var.ecr_repository_name
-  image_tag_mutability = "MUTABLE"
-  
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-  
-  encryption_configuration {
-    encryption_type = "AES256"
-  }
-  
-  tags = {
-    Name = "${var.project_name}-ecr"
-  }
+# ECR Repository (use existing one)
+data "aws_ecr_repository" "app" {
+  name = var.ecr_repository_name
 }
 
 # ECR Lifecycle Policy
 resource "aws_ecr_lifecycle_policy" "app" {
-  repository = aws_ecr_repository.app.name
+  repository = data.aws_ecr_repository.app.name
   
   policy = jsonencode({
     rules = [
@@ -427,7 +414,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "burgerhub-container"
-      image = "${aws_ecr_repository.app.repository_url}:${var.image_tag}"
+      image = "${data.aws_ecr_repository.app.repository_url}:${var.image_tag}"
       
       portMappings = [
         {
