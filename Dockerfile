@@ -6,10 +6,10 @@ WORKDIR /app
 
 # Copy package files
 COPY frontend/package*.json ./
-COPY frontend/yarn.lock* ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
+# Install dependencies with clean cache
+RUN npm cache clean --force && \
+    npm install --legacy-peer-deps --force
 
 # Copy source code
 COPY frontend/ .

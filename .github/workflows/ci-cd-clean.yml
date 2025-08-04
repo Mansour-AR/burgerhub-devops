@@ -6,11 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: read
-  security-events: write
-  actions: read
-
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: burgerhub-frontend
@@ -43,9 +38,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd frontend
-          npm cache clean --force
-          rm -rf node_modules
-          npm install --legacy-peer-deps --force
+          npm install --legacy-peer-deps
 
       - name: Run linting
         run: |
@@ -98,10 +91,9 @@ jobs:
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('trivy-results.sarif') != ''
+        if: always()
         with:
           sarif_file: "trivy-results.sarif"
-        continue-on-error: true
 
   # Job 3: Build and Push Docker Image
   docker-build-push:
@@ -166,10 +158,9 @@ jobs:
 
       - name: Upload Docker scan results
         uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('docker-trivy-results.sarif') != ''
+        if: always()
         with:
           sarif_file: "docker-trivy-results.sarif"
-        continue-on-error: true
 
   # Job 4: Deploy Infrastructure with Terraform
   terraform-deploy:
