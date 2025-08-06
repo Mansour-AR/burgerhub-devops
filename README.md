@@ -343,19 +343,4 @@ aws ecr describe-repositories --repository-names burgerhub-frontend
 3. **Service mesh** with AWS App Mesh
 4. **Chaos engineering** with AWS Fault Injection Simulator
 
-## 📞 Support
 
-For questions or issues:
-
-1. Check the troubleshooting section
-2. Review GitHub Actions logs
-3. Check AWS CloudWatch logs
-4. Create an issue in the repository
-
-## 📄 License
-
-This project is licensed under the MIT License. See LICENSE file for details.
-
----
-
-**Built with ❤️ by DevOps Engineers for the BurgerHub community**
