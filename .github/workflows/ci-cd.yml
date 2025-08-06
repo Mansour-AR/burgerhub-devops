@@ -308,11 +308,11 @@ jobs:
       - name: Deployment Success Notification
         if: needs.deploy-ecs.result == 'success'
         run: |
-          echo "✅ BurgerHub deployment successful!"
-          echo "🚀 Application is live and ready to serve customers!"
+          echo "BurgerHub deployment successful!"
+          echo "Application is live and ready to serve customers!"
 
       - name: Deployment Failure Notification
         if: needs.deploy-ecs.result == 'failure'
         run: |
-          echo "❌ BurgerHub deployment failed!"
-          echo "🔧 Please check the logs and try again."
+          echo "BurgerHub deployment failed!"
+          echo "Please check the logs and try again."
